@@ -17,7 +17,3 @@ class EnvPassthroughInjector(HicaInjector):
 
   def get_injected_args(self):
     return (("--env", HicaValueType.FULLENV, os.environ),)
-
-def register(context):
-  obj = EnvPassthroughInjector()
-  context[obj.get_config_key()] = obj

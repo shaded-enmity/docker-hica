@@ -17,7 +17,3 @@ class PulseInjector(HicaInjector):
 
   def get_injected_args(self):
     return (("--pulse", HicaValueType.PATH, "/run/user/" + str(os.getuid()) + "/pulse"),)
-
-def register(context):
-  obj = PulseInjector()
-  context[obj.get_config_key()] = obj

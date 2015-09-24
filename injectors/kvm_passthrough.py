@@ -16,7 +16,3 @@ class KvmPassthroughInjector(HicaInjector):
 
   def get_injected_args(self):
     return (("--kvm-device", HicaValueType.DEVICE, "/dev/kvm"),)
-
-def register(context):
-  obj = KvmPassthroughInjector()
-  context[obj.get_config_key()] = obj

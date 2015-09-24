@@ -16,7 +16,3 @@ class SoundDeviceInjector(HicaInjector):
 
   def get_injected_args(self):
     return (("--sound-device", HicaValueType.DEVICE | HicaValueType.GLOB, "/dev/snd*"),)
-
-def register(context):
-  obj = SoundDeviceInjector()
-  context[obj.get_config_key()] = obj

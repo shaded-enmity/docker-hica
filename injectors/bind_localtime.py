@@ -16,7 +16,3 @@ class BindLocaltimeInjector(HicaInjector):
 
   def get_injected_args(self):
     return (("--time-path", HicaValueType.PATH, "/etc/localtime"),)
-
-def register(context):
-  obj = BindLocaltimeInjector()
-  context[obj.get_config_key()] = obj

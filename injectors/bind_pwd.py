@@ -23,7 +23,3 @@ class BindPwdInjector(HicaInjector):
     # we also set in-container PWD to the same as on the host
     config.append('-w')
     config.append(args[0][1])
-
-def register(context):
-  obj = BindPwdInjector()
-  context[obj.get_config_key()] = obj

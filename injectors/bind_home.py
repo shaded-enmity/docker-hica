@@ -17,7 +17,3 @@ class BindHomeInjector(HicaInjector):
 
   def get_injected_args(self):
     return (("--home-path", HicaValueType.PATH, os.getenv("HOME")),)
-
-def register(context):
-  obj = BindHomeInjector()
-  context[obj.get_config_key()] = obj

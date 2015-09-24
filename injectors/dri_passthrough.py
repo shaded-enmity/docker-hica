@@ -16,7 +16,3 @@ class DriPassthroughInjector(HicaInjector):
 
   def get_injected_args(self):
     return (("--dri-passthrough-path", HicaValueType.DEVICE | HicaValueType.GLOB, "/dev/dri/*"),)
-
-def register(context):
-  obj = DriPassthroughInjector()
-  context[obj.get_config_key()] = obj

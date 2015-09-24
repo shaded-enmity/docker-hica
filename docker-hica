@@ -9,6 +9,12 @@
 import os, sys, docker, argparse, imp, subprocess
 from base import *
 
+# create docker client for inspecting images
+dock = docker.Client()
+
+_injector_type = 'HicaInjector'
+_injector_registry = {}
+
 # adjust for container arguments passed after the -- delimeter
 container_args = []
 sliceat = 0
@@ -21,9 +27,18 @@ for i, arg in enumerate(sys.argv[1:]):
 if sliceat:
   sys.argv = sys.argv[:sliceat]
 
-# create docker client for inspecting images
-dock = docker.Client()
-_injector_registry  = {}
+def HicaModuleFindInjectors(module):
+  """ Find injectors in the given module
+
+  :param module: Loaded module
+  :type module: imp.Module
+  """
+  injectors = []
+  for n in dir(module):
+    attr = getattr(module, n)
+    if hasattr(attr, '__base__') and attr.__base__.__name__ == _injector_type:
+      injectors.append(attr)
+  return injectors
 
 def HicaLoadInjectors(path):
   """ Load all Python modules from `path`
@@ -40,7 +55,10 @@ def HicaLoadInjectors(path):
       f, filename, description = imp.find_module(modname, [fullpath])
       m = imp.load_module(modname, open(filename, 'U'), filename, description)
       try:
-        m.register(r)
+        injs = HicaModuleFindInjectors(m)
+        for i in injs:
+          obj = i()
+          _injector_registry[obj.get_config_key()] = obj
       except AttributeError:
         print ("Module {0} does not implement `register(context)`".format(modname))
   return r

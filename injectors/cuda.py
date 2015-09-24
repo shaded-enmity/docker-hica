@@ -18,7 +18,3 @@ class CudaInjector(HicaInjector):
     return (("--cuda-device", HicaValueType.DEVICE, "/dev/nvidia0"), 
         ("--cuda-device-ctl", HicaValueType.DEVICE, "/dev/nvidiactl"),
         ("--cuda-device-uvm", HicaValueType.DEVICE, "/dev/nvidia-uvm"))
-
-def register(context):
-  obj = CudaInjector()
-  context[obj.get_config_key()] = obj

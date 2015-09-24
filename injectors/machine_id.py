@@ -16,7 +16,3 @@ class MachineIdInjector(HicaInjector):
 
   def get_injected_args(self):
     return (("--machine-id-path", HicaValueType.PATH, "/etc/machine-id"),)
-
-def register(context):
-  obj = MachineIdInjector()
-  context[obj.get_config_key()] = obj

@@ -17,7 +17,3 @@ class XSocketInjector(HicaInjector):
   def get_injected_args(self):
     return (("--xsocket-path", HicaValueType.PATH, "/tmp/.X11-unix"), 
         ("--x-display-num", HicaValueType.STRING, "DISPLAY=:0"))
-
-def register(context):
-  obj = XSocketInjector()
-  context[obj.get_config_key()] = obj
