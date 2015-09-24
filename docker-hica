@@ -58,7 +58,7 @@ def HicaLoadInjectors(path):
         injs = HicaModuleFindInjectors(m)
         for i in injs:
           obj = i()
-          _injector_registry[obj.get_config_key()] = obj
+          r[obj.get_config_key()] = obj
       except AttributeError:
         print ("Module {0} does not implement `register(context)`".format(modname))
   return r
