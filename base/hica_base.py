@@ -27,10 +27,10 @@ class HicaInjector(object):
         if typ & HicaValueType.GLOB:
           for v in glob.glob(val):
             config.append("--volume")
-            config.append("{0}:{0}:Z".format(v))
+            config.append("{0}:{0}".format(v))
         else:
           config.append("--volume")
-          config.append("{0}:{0}:Z".format(val))
+          config.append("{0}:{0}".format(val))
     elif typ & HicaValueType.DEVICE:
       if val and val != "none":
         if typ & HicaValueType.GLOB:

@@ -13,6 +13,8 @@ Versioned specification of all labels can be found in `docs/label.md`.
 
 Guidelines for Dockerfiles can be found in `docs/dockerfile-guidelines.md`.
 
+__SELinux__ is currently unsupported (labeling needs to be fixed).
+
 ### Examples
 
 Examples directory currently contains several Dockerfiles:
@@ -59,7 +61,7 @@ The container requests the following capabilities:
  - Bind mounts machine-id into the container
  - Bind mounts XSocket into the container
 Proceed? [y/Y/n]: y
-Executing: docker run -i -u 1000:1000 --volume /Repos/docker-hica:/Repos/docker-hica:Z -w /Repos/docker-hica --volume /etc/machine-id:/etc/machine-id:Z --volume /tmp/.X11-unix:/tmp/.X11-unix:Z -e DISPLAY=:0 firefox:1.0
+Executing: docker run -i -u 1000:1000 --volume /Repos/docker-hica:/Repos/docker-hica -w /Repos/docker-hica --volume /etc/machine-id:/etc/machine-id --volume /tmp/.X11-unix:/tmp/.X11-unix -e DISPLAY=:0 firefox:1.0
 ```
 
 And finally the `--yes` flag allows for skipping the initial prompt for confirmation as seen on the example above.
