@@ -29,6 +29,8 @@ under `schema` versions.
 | io.hica.introspect_runtime=[] | --introspect-runtime | *path* | `none` |
 | io.hica.library_whitelist=[] | --library-whitelist | *glob* | `none` |
 
+---
+
 Note that `introspect_runtime` and `library_whitelist` are complementary labels, let's see an example usage:
 
 ```
@@ -42,8 +44,28 @@ The resulting `DSO`'s are then compared with the contents of the `library_whitel
 
 ### Testing that injectors work
 
-Image authors who target a wide variety of different host systems may want to be able to verify that the injectors work correctly before doing anything else. For that purpose, there's an option to specify in-container test binary for the given injector. Building on the reverse DNS notation, simply append `.test` to the label definition and specify the binary to execute:
+Image authors who target a wide variety of different host systems may want to be able to verify that the injectors work correctly before doing anything else. For that purpose, there's an option to specify in-container test binary for the given injector. Building on the reverse DNS notation, simply append `.test.host` or `.test.guest` to the label definition and specify the binary to execute:
 
 ```
-LABEL io.hica.kvm_passthrough.test='/opt/tests/kvm'
+LABEL io.hica.kvm_passthrough.test.guest='/opt/tests/kvm'
 ```
+
+Note that **ALL** tests that are specified have to succeed during the test case run.
+
+### Adding human-readable description to injectors
+
+Some injectors may require additional description text besides the generic summary found directly in code.
+For that purpose you can use the `.description` namespace for the given label, which might be especially valuable in the context of labels that accept additional parameters (`introspect_runtime`, `library_whitelist`).
+
+```
+LABEL io.hica.introspect_runtime="glxinfo"
+LABEL io.hica.introspect_runtime.description="DRI/OpenGL Runtime Dependencies"
+```
+
+### Summary of supplementary label namespaces
+
+| Value | Description |
+|-------|-------------|
+| *.test.host | Test command executed on host |
+| *.test.guest | Test command executed on guest |
+| *.description | Human readable description of the injector |
