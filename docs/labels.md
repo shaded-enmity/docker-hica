@@ -42,6 +42,8 @@ What is hapenning? If you ever tried to work with `OpenGL`/`OpenCL` or just `DRI
 So the `introspect_runtime` label executes the `glxinfo` utility on host, while `strace`'ing it for loaded `DSO`'s. 
 The resulting `DSO`'s are then compared with the contents of the `library_whitelist` label and only matching libraries are being passed.
 
+Please note that *all* versions (`SOnames`) of the specified shared object will be linked.
+
 ### Testing that injectors work
 
 Image authors who target a wide variety of different host systems may want to be able to verify that the injectors work correctly before doing anything else. For that purpose, there's an option to specify in-container test binary for the given injector. Building on the reverse DNS notation, simply append `.test.host` or `.test.guest` to the label definition and specify the binary to execute:
