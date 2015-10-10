@@ -151,13 +151,10 @@ def HicaParseArguments(labels):
         host.append((l, label[1]))
 
     for (lbl, spec) in guest:
-      HicaTestSingleGuest(lbl, spec, "hha:latest")
-
+      HicaTestSingleGuest(lbl, spec, p.hica_app_name)
     for (lbl, spec) in host:
       HicaTestSingleHost(lbl, spec)
 
-    print(guest)
-    print(host)
     sys.exit(0)
 
   return args.parse_args()
