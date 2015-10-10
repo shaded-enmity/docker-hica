@@ -166,7 +166,7 @@ name = HicaGetImageName()
 images = HicaGetImages(dock.images(all=True))
 
 # search for the image, also try the default 'latest' tag
-if name not in images or (name + ":latest") not in images:
+if name not in images and (name + ":latest") not in images:
   print("*** Image '{0}' not found locally, bailing!".format(name))
   sys.exit(1)
 
