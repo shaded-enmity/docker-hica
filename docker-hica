@@ -33,8 +33,9 @@ def _HicaBailIf(rc, *msg):
       print(m)
     sys.exit(rc)
 
-def HicaTestSingleGuest(injector, spec, image):
-  rc = subprocess.call(['docker', 'run', '--entrypoint', '/bin/sh', image, '-c', spec])
+def HicaTestSingleGuest(injector, spec, image, config):
+  run = ['docker', 'run', '--entrypoint', '/bin/sh'] + config + [image, '-c', spec]
+  rc = subprocess.call(run)
   _HicaBailIf(rc, '*** Guest test failed for injector {0}!'.format(injector), 
                   '    ' + spec)
 
@@ -141,11 +142,17 @@ def HicaParseArguments(labels):
     guest, host = [], []
     # collect tests
     for label in seen:
-      guest.extend(labels.query(label, 'test.guest'))
+      gl = [(label, a, b) for (a, b) in labels.query(label, 'test.guest')]
+      guest.extend(gl)
       host.extend(labels.query(label, 'test.host'))
     # run guest
-    for (lbl, spec) in guest:
-      HicaTestSingleGuest(lbl, spec, p.hica_app_name)
+    for (inj, lbl, spec) in guest:
+      conf, iargs = [], []
+      i = _injector_registry[HicaLabelStore.PREFIX + '.' + inj]
+      for (_, t, v) in i.get_injected_args():
+        iargs.append((t, v))
+      i.inject_config(conf, iargs)
+      HicaTestSingleGuest(lbl, spec, p.hica_app_name, conf)
     # run host
     for (lbl, spec) in host:
       HicaTestSingleHost(lbl, spec)
