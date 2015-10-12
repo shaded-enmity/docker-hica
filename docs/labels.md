@@ -5,7 +5,7 @@ All labels live in common namespace `io.hica`, each set of labels with defined
 values and name of command line parameter for supplying the value is versioned 
 under `schema` versions. 
 
-## Label Schema v0.3
+## Label Schema v0.4
 
 | Label | Command line | Values | Default Value |
 |-------|--------------|--------|---------------|
@@ -21,29 +21,24 @@ under `schema` versions.
 | io.hica.bind_localtime | --time-path | *path* | `/etc/localtime` |
 | io.hica.env_passthrough | --env | `none`, `full` | `full` |
 | io.hica.kvm_passthrough | --kvm-device | *path* | `/dev/kvm` |
-
-#### Complementary labels
-
-| Label | Command line | Values | Default Value |
-|-------|--------------|--------|---------------|
 | io.hica.introspect_runtime=[] | --introspect-runtime | *path* | `none` |
-| io.hica.library_whitelist=[] | --library-whitelist | *glob* | `none` |
 
 ---
 
-Note that `introspect_runtime` and `library_whitelist` are complementary labels, let's see an example usage:
+Note that `introspect_runtime` has complementary sub-label `.whitelist`, let's see an example usage:
 
 ```
 LABEL io.hica.introspect_runtime="glxinfo"
-LABEL io.hica.library_whitelist="libGL.so:libX11.so:libxcb-dri2.so:libxcb.so"
+LABEL io.hica.introspect_runtime.whitelist="libGL.so:libX11.so:libxcb-dri2.so:libxcb.so"
 ```
 
 What is hapenning? If you ever tried to work with `OpenGL`/`OpenCL` or just `DRI` in general in a container / virtual environment, you've had to figure out the hard way that if there's even slightest disparity between particular driver versions betweem host and container that it _just doesn't work_.
 So the `introspect_runtime` label executes the `glxinfo` utility on host, while `strace`'ing it for loaded `DSO`'s. 
-The resulting `DSO`'s are then compared with the contents of the `library_whitelist` label and only matching libraries are being passed.
+The resulting `DSO`'s are then compared with the contents of the `whitelist` label and only matching libraries are being passed.
 
 Please note that *all* versions (`SOnames`) of the specified shared object will be linked.
-
+If the `whitelist` is not specified it equals to empty set and no libraries are passed.
+ 
 ### Testing that injectors work
 
 Image authors who target a wide variety of different host systems may want to be able to verify that the injectors work correctly before doing anything else. For that purpose, there's an option to specify in-container test binary for the given injector. Building on the reverse DNS notation, simply append `.test.host` or `.test.guest` to the label definition and specify the binary to execute:
@@ -71,3 +66,4 @@ LABEL io.hica.introspect_runtime.description="DRI/OpenGL Runtime Dependencies"
 | *.test.host | Test command executed on host |
 | *.test.guest | Test command executed on guest |
 | *.description | Human readable description of the injector |
+| *.whitelist | Whitelist of possible values |

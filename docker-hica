@@ -7,7 +7,7 @@
 # MIT License (C) 2015
 
 import os, sys, docker, argparse, imp, subprocess
-from base import *
+from base.hica_base import *
 
 # create docker client for inspecting images
 dock = docker.Client()
@@ -26,6 +26,23 @@ for i, arg in enumerate(sys.argv[1:]):
 
 if sliceat:
   sys.argv = sys.argv[:sliceat]
+
+def _HicaBailIf(rc, *msg):
+  if rc > 0:
+    for m in msg:
+      print(m)
+    sys.exit(rc)
+
+def HicaTestSingleGuest(injector, spec, image, config):
+  run = ['docker', 'run', '--entrypoint', '/bin/sh'] + config + [image, '-c', spec]
+  rc = subprocess.call(run)
+  _HicaBailIf(rc, '*** Guest test failed for injector {0}!'.format(injector), 
+                  '    ' + spec)
+
+def HicaTestSingleHost(injector, spec):
+  rc = subprocess.call(['/bin/sh', '-c', spec])
+  _HicaBailIf(rc, '*** Host test failed for injector {0}!'.format(injector), 
+                  '    ' + spec)
 
 def HicaModuleFindInjectors(module):
   """ Find injectors in the given module
@@ -69,6 +86,7 @@ def HicaGetBaseArgparse():
   args = argparse.ArgumentParser()
   args.add_argument("hica_app_name")
   args.add_argument("--show-args", help='show possible arguments for the specified "hica_app_name"', default=False, action='store_true')
+  args.add_argument("--test-injectors", help='executes injector tests for specified "hica_app_name"', default=False, action='store_true')
   args.add_argument("--verbose", help='print additional information', default=False, action='store_true')
   args.add_argument("--yes", help='bypass the capability review check', default=False, action='store_true')
   args.add_argument("--user", help="user:group to run as ({0}:{0})".format(str(os.getuid())), default='{0}:{0}'.format(str(os.getuid())))
@@ -88,7 +106,7 @@ def HicaGetLabelsFromImage(image):
   :type image: dict
   """
 
-  return [k for (k, _) in image['Config']['Labels'].iteritems()]
+  return [(k, v) for (k, v) in image['Config']['Labels'].iteritems()]
 
 def HicaParseArguments(labels):
   """ Parse argument and optionally show usage and terminate with `0`
@@ -102,10 +120,14 @@ def HicaParseArguments(labels):
   # parse now to catch --show-args
   p, _ = args.parse_known_args()
 
+  # top-level label cache
+  seen = []
+
   # add needed argparsers
-  for label in labels:
-    if label in _injector_registry:
-      inj = _injector_registry[label]
+  for label in labels.items:
+    if label[0] in _injector_registry:
+      seen.append(label[0].rsplit('.', 1)[1])
+      inj = _injector_registry[label[0]]
       for (arg, typ, defval) in inj.get_injected_args():
         if arg:
           args.add_argument(arg, default=defval)
@@ -113,6 +135,27 @@ def HicaParseArguments(labels):
   # now that we added the argparsers we can print usage and bail
   if p.show_args:
     args.print_usage()
+    sys.exit(0)
+
+  # test injectors
+  if p.test_injectors:
+    guest, host = [], []
+    # collect tests
+    for label in seen:
+      gl = [(label, a, b) for (a, b) in labels.query(label, 'test.guest')]
+      guest.extend(gl)
+      host.extend(labels.query(label, 'test.host'))
+    # run guest
+    for (inj, lbl, spec) in guest:
+      conf, iargs = [], []
+      i = _injector_registry[HicaLabelStore.PREFIX + '.' + inj]
+      for (_, t, v) in i.get_injected_args():
+        iargs.append((t, v))
+      i.inject_config(conf, iargs)
+      HicaTestSingleGuest(lbl, spec, p.hica_app_name, conf)
+    # run host
+    for (lbl, spec) in host:
+      HicaTestSingleHost(lbl, spec)
     sys.exit(0)
 
   return args.parse_args()
@@ -131,10 +174,13 @@ def HicaInjectConfiguration(labels, args, config):
 
   caps = []
   # map params from argparse back to injectors
-  for label in labels:
-    if label in _injector_registry:
-      inj = _injector_registry[label]
+  for label in labels.items:
+    if label[0] in _injector_registry:
+      inj = _injector_registry[label[0]]
       cfgs = []
+      sub = labels.query_full(label[0], 'description')
+      if sub:
+        caps.append(sub[0][1])
       caps.append(inj.get_description())
       for (arg, typ, defval) in inj.get_injected_args():
         if arg:
@@ -148,8 +194,7 @@ def HicaInjectConfiguration(labels, args, config):
   if args.yes or not caps or raw_input(instr) in ['y', 'Y']:
     return config
   else:
-    print("*** Operation aborted!")
-    sys.exit(1)
+    _HicaBailIf(1, '*** Operation aborted!')
 
 def HicaGetImages(images):
   """ Gets a list of all image names
@@ -167,17 +212,18 @@ images = HicaGetImages(dock.images(all=True))
 
 # search for the image, also try the default 'latest' tag
 if name not in images and (name + ":latest") not in images:
-  print("*** Image '{0}' not found locally, bailing!".format(name))
-  sys.exit(1)
+  _HicaBailIf(1, '*** Image \'{0}\' not found locally, bailing!'.format(name))
 
 image = dock.inspect_image(name)
 
 labels = HicaGetLabelsFromImage(image)
-parsed = HicaParseArguments(labels)
+ls = HicaLabelStore(labels)
+parsed = HicaParseArguments(ls)
+
 # base configuration
 # run the container as current user so that file system rights are fine
 # for bind mounted files
-config = HicaInjectConfiguration(labels, parsed, ['-i', '-u', parsed.user])
+config = HicaInjectConfiguration(ls, parsed, ['-i', '-u', parsed.user])
 runcmd = ["docker", "run"] + config + [name] + container_args
 
 if parsed.verbose:

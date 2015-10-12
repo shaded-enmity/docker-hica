@@ -5,7 +5,7 @@
 #
 # MIT License (C) 2015
 
-import glob, os, sys
+import glob, os, sys, re
 
 class HicaValueType(object):
   (NONE, PATH, DEVICE, GLOB, STRING, FULLENV) = [0] + [1 << x for x in range(5)]
@@ -51,6 +51,33 @@ class HicaInjector(object):
   def inject_config(self, config, from_args):
     for cv in from_args:
       self.inject_value_type(cv, config)
+
+class HicaLabelStore(object):
+  PREFIX = 'io.hica'
+  def __init__(self, labels):
+    self.items = labels
+
+  def query(self, ns, selector='*'):
+    """ Query the label store for labels
+
+    :param ns: Label namespace (`bind_pwd` for example)
+    :type ns: str
+    :param selector: Target selector (`test` or `test.guest` for example)
+    :type selector: str
+    
+    """
+    q, r = HicaLabelStore.PREFIX + '.' + ns, []
+    for (key, value) in self.items:
+      if key.startswith(q) and key != q:
+        sub = key[len(q):]
+        m = re.match('.' + selector, sub)
+        if m:
+          r.append((key, value))
+    return r
+
+  def query_full(self, label, selector='*'):
+    """ Same as `query` but strips all the prefixes """
+    return self.query(label.rsplit('.', 1)[1], selector)
 
 class HicaConfiguration(object):
   def __init__(self):
