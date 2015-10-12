@@ -5,6 +5,7 @@
 #
 # MIT License (C) 2015
 
+import os
 from base.hica_base import *
 
 class XSocketInjector(HicaInjector):
@@ -16,4 +17,4 @@ class XSocketInjector(HicaInjector):
 
   def get_injected_args(self):
     return (("--xsocket-path", HicaValueType.PATH, "/tmp/.X11-unix"), 
-        ("--x-display-num", HicaValueType.STRING, "DISPLAY=:0"))
+        ("--x-display-num", HicaValueType.STRING, "DISPLAY=" + os.getenv("DISPLAY")))
