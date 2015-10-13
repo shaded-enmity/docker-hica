@@ -9,11 +9,11 @@ integration with the host operating system.
 
 ### Docs
 
-Versioned specification of all labels can be found in `docs/label.md`.
+Versioned specification of all labels can be found in [docs/label.md](docs/label.md).
 
-Guidelines for Dockerfiles can be found in `docs/dockerfile-guidelines.md`.
+Guidelines for Dockerfiles can be found in [docs/dockerfile-guidelines.md](docs/dockerfile-guidelines.md).
 
-__SELinux__ is currently unsupported (labeling needs to be fixed).
+SELinux usage is documented in [docs/selinux.md](docs/selinux.md)
 
 ### Examples
 
