@@ -12,6 +12,7 @@ from base.hica_base import *
 # create docker client for inspecting images
 dock = docker.Client()
 
+_selinux = '/usr/sbin/getenforce'
 _injector_type = 'HicaInjector'
 _injector_registry = {}
 
@@ -89,6 +90,7 @@ def HicaGetBaseArgparse():
   args.add_argument("--test-injectors", help='executes injector tests for specified "hica_app_name"', default=False, action='store_true')
   args.add_argument("--verbose", help='print additional information', default=False, action='store_true')
   args.add_argument("--yes", help='bypass the capability review check', default=False, action='store_true')
+  args.add_argument("--selinux-label", help="provide a confinement context", default='label:disable')
   args.add_argument("--user", help="user:group to run as ({0}:{0})".format(str(os.getuid())), default='{0}:{0}'.format(str(os.getuid())))
   return args
 
@@ -223,7 +225,12 @@ parsed = HicaParseArguments(ls)
 # base configuration
 # run the container as current user so that file system rights are fine
 # for bind mounted files
-config = HicaInjectConfiguration(ls, parsed, ['-i', '-u', parsed.user])
+cfg = ['-i', '-u', parsed.user ]
+# check if we have SELinux enabled
+if os.path.exists(_selinux) and 'Enforcing' in subprocess.check_output([_selinux]):
+   cfg += ['--security-opt', parsed.selinux_label]
+
+config = HicaInjectConfiguration(ls, parsed, cfg)
 runcmd = ["docker", "run"] + config + [name] + container_args
 
 if parsed.verbose:
