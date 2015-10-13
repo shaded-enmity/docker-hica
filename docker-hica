@@ -190,7 +190,7 @@ def HicaInjectConfiguration(labels, args, config):
           cfgs.append((typ, x))
         else:
           cfgs.append((typ, defval))
-      inj.inject_config(config, cfgs)
+      inj.inject_config(config, cfgs, labels)
 
   instr = "The container requests the following capabilities: \n - " + "\n - ".join(caps) + "\nProceed? [y/Y/n]: "
   if args.yes or not caps or raw_input(instr) in ['y', 'Y']:

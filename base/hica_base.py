@@ -48,7 +48,7 @@ class HicaInjector(object):
         config.append("-e")
         config.append("{0}={1}".format(k, v))
 
-  def inject_config(self, config, from_args):
+  def inject_config(self, config, from_args, labelStore=None):
     for cv in from_args:
       self.inject_value_type(cv, config)
 
