@@ -9,9 +9,9 @@ integration with the host operating system.
 
 ### Docs
 
-Versioned specification of all labels can be found in [docs/label.md](docs/label.md).
+Versioned specification of all labels can be found in [docs/labels.md](docs/labels.md)
 
-Guidelines for Dockerfiles can be found in [docs/dockerfile-guidelines.md](docs/dockerfile-guidelines.md).
+Guidelines for Dockerfiles can be found in [docs/dockerfile-guidelines.md](docs/dockerfile-guidelines.md)
 
 SELinux usage is documented in [docs/selinux.md](docs/selinux.md)
 
