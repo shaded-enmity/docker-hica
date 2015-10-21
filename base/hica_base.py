@@ -68,6 +68,8 @@ class HicaLabelStore(object):
     """
     q, r = HicaLabelStore.PREFIX + '.' + ns, []
     for (key, value) in self.items:
+      if not selector and key == q:
+        r.append((key, value))
       if key.startswith(q) and key != q:
         sub = key[len(q):]
         m = re.match('.' + selector, sub)
