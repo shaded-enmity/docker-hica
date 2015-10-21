@@ -1,4 +1,4 @@
-#!/usr/bin/python -tt
+#!/usr/bin/env python
 # vim: set fileencoding=utf-8
 # Pavel Odvody <podvody@redhat.com>
 #
