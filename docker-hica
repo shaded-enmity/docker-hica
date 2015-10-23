@@ -130,6 +130,7 @@ def HicaParseArguments(labels):
     if label[0] in _injector_registry:
       seen.append(label[0].rsplit('.', 1)[1])
       inj = _injector_registry[label[0]]
+      inj.labels = labels
       for (arg, typ, defval) in inj.get_injected_args():
         if arg:
           args.add_argument(arg, default=defval)
@@ -190,7 +191,7 @@ def HicaInjectConfiguration(labels, args, config):
           cfgs.append((typ, x))
         else:
           cfgs.append((typ, defval))
-      inj.inject_config(config, cfgs, labels)
+      inj.inject_config(config, cfgs)
 
   instr = "The container requests the following capabilities: \n - " + "\n - ".join(caps) + "\nProceed? [y/Y/n]: "
   if args.yes or not caps or raw_input(instr) in ['y', 'Y']:
