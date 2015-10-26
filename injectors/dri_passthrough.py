@@ -15,4 +15,7 @@ class DriPassthroughInjector(HicaInjector):
     return "io.hica.dri_passthrough"
 
   def get_injected_args(self):
-    return (("--dri-passthrough-path", HicaValueType.DEVICE | HicaValueType.GLOB, "/dev/dri/*"),)
+    return (("--dri-passthrough-path", HicaValueType.DEVICE | HicaValueType.GLOB, "/dev/dri/*"),
+             ("--dri-passthrough-path-ati", HicaValueType.DEVICE | HicaValueType.GLOB,"/dev/ati/*"),
+             ("--dri-passthrough-path-nvidia", HicaValueType.DEVICE | HicaValueType.GLOB,"/dev/nvidia/*"))
+
