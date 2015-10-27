@@ -81,6 +81,12 @@ class HicaLabelStore(object):
     """ Same as `query` but strips all the prefixes """
     return self.query(label.rsplit('.', 1)[1], selector)
 
+  def get_value(self, label):
+    """ Get value from a single fully-qualified name """ 
+    for (key, value) in self.items:
+      if key == label:
+        return value
+
 class HicaConfiguration(object):
   def __init__(self):
     pass
