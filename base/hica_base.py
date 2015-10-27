@@ -48,7 +48,7 @@ class HicaInjector(object):
         config.append("-e")
         config.append("{0}={1}".format(k, v))
 
-  def inject_config(self, config, from_args, labelStore=None):
+  def inject_config(self, config, from_args):
     for cv in from_args:
       self.inject_value_type(cv, config)
 
@@ -80,6 +80,12 @@ class HicaLabelStore(object):
   def query_full(self, label, selector='*'):
     """ Same as `query` but strips all the prefixes """
     return self.query(label.rsplit('.', 1)[1], selector)
+
+  def get_value(self, label):
+    """ Get value from a single fully-qualified name """ 
+    for (key, value) in self.items:
+      if key == label:
+        return value
 
 class HicaConfiguration(object):
   def __init__(self):

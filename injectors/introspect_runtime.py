@@ -13,7 +13,7 @@ _container_lib_location = '/external_libs'
 class IntrospectRuntimeInjector(HicaInjector):
 
   def get_description(self):
-    return "Runs a binary ({0}) which makes a white list into the container".format(os.getenv("HOME"))
+    return "Runs a binary ({0}) which makes a white list into the container".format(self.labels.get_value('io.hica.introspect_runtime'))
 
   def get_config_key(self):
     return "io.hica.introspect_runtime"
@@ -22,11 +22,11 @@ class IntrospectRuntimeInjector(HicaInjector):
     return (("--introspect-runtime", HicaValueType.PATH, ""),
              ("--introspect-runtime-whitelist", HicaValueType.STRING, ""))
 
-  def _get_runtime(self, labelStore):
-    return dict(labelStore.query(''))['io.hica.introspect_runtime']
+  def _get_runtime(self):
+    return dict(self.labels.query(''))['io.hica.introspect_runtime']
 
-  def _get_whitelist(self, labelStore):
-    return dict(labelStore.query(''))['io.hica.introspect_runtime.whitelist'].split(':')
+  def _get_whitelist(self):
+    return dict(self.labels.query(''))['io.hica.introspect_runtime.whitelist'].split(':')
 
   def _run_introspection(self, runtime='', whitelist=[], verbose=False):
     """ Figure out which objects are opened by a test binary and are matched by the white list. 
@@ -71,21 +71,18 @@ class IntrospectRuntimeInjector(HicaInjector):
     libset = set()
     unique_libs = []
     for lib in library:
-      lib = 
       unique_libs.append(lib)
 
-  def inject_config(self, config, from_args, labelStore=None):
+  def inject_config(self, config, from_args):
     """
     :param config:
     :type config: list
     :param from_args:
     :type from_args: dict
-    :param labelStore:
-    :type labelStore: hica_base.HicaLabelStore
     """
     # First get required values from labelStore
-    runtime = self._get_runtime(labelStore)
-    whitelist = self._get_whitelist(labelStore)
+    runtime = self._get_runtime()
+    whitelist = self._get_whitelist()
     #Run introspection on the libraries to retrieve list of libraries to link
     found_libraries = self._run_introspection(runtime, whitelist, verbose=True)
     container_path_set=set()
@@ -97,7 +94,7 @@ class IntrospectRuntimeInjector(HicaInjector):
         continue
       container_path_set.add(cpath)
 
-      config.append("--volume={0}:{1}".format(library, ))
+      config.append("--volume={0}:{1}".format(library, cpath))
     
     config.extend(["-e","LD_LIBRARY_PATH={0}".format(_container_lib_location)])
     config.extend(["-e","LIBGL_DRIVERS_PATH={0}".format(_container_lib_location)])
