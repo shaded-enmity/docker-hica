@@ -23,10 +23,10 @@ class IntrospectRuntimeInjector(HicaInjector):
              ("--introspect-runtime-whitelist", HicaValueType.STRING, ""))
 
   def _get_runtime(self):
-    return dict(self.labels.query(''))['io.hica.introspect_runtime']
+    return self.labels.get_value('io.hica.introspect_runtime')
 
   def _get_whitelist(self):
-    return dict(self.labels.query(''))['io.hica.introspect_runtime.whitelist'].split(':')
+    return self.labels.get_value('io.hica.introspect_runtime.whitelist').split(':')
 
   def _run_introspection(self, runtime='', whitelist=[], verbose=False):
     """ Figure out which objects are opened by a test binary and are matched by the white list. 
@@ -39,10 +39,15 @@ class IntrospectRuntimeInjector(HicaInjector):
     found_objects = set()
     try:
       # Retrieve list of successfully opened objects
-      p = subprocess.Popen("strace {} 2>&1| grep open | grep -v ENOENT | cut -d '\"'  -f 2 | sort | uniq -c | awk '{{print $2}}\n'".format(runtime), shell=True, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
-      (stdout, stderr) = p.communicate()
-      opened_objects = stdout.split()
-      
+      strace = subprocess.Popen(['strace', runtime], stderr=subprocess.PIPE)
+      (_, stderr) = strace.communicate()
+      opened_objects = set()
+      for line in stderr.split('\n'):
+          if 'open' in line and 'ENOENT' not in line:
+              start = line.index('"')
+              end = line.index('"', start + 1)
+              opened_objects.add(line[start + 1:end])
+              
       # filter opened objects through white list.
       for obj in opened_objects:
         for wl in whitelist:
