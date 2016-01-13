@@ -11,7 +11,7 @@ setup(
     },
     author = 'Pavel Odvody',
     author_email = 'podvody@redhat.com',
-    description = 'None',
+    description = 'The goal of this project is to define a set of image label metadata and launcher tooling that understands said metadata to provide for smooth experience running containerized applications with tight integration with the host operating system.',
     license = 'MIT',
     keywords = 'docker host integrated container application',
     url = 'https://github.com/shaded-enmity/docker-hica'
