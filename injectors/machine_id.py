@@ -9,10 +9,10 @@ from base.hica_base import *
 
 class MachineIdInjector(HicaInjector):
   def get_description(self):
-    return "Bind mounts machine-id into the container"
+    return 'Bind mounts machine-id into the container'
 
   def get_config_key(self):
-    return "io.hica.machine_id"
+    return 'io.hica.machine_id'
 
   def get_injected_args(self):
-    return (("--machine-id-path", HicaValueType.PATH, "/etc/machine-id"),)
+    return (('--machine-id-path', HicaValueType.PATH, '/etc/machine-id'),)

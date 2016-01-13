@@ -9,10 +9,10 @@ from base.hica_base import *
 
 class SoundDeviceInjector(HicaInjector):
   def get_description(self):
-    return "Bind mounts sound device into the container"
+    return 'Bind mounts sound device into the container'
 
   def get_config_key(self):
-    return "io.hica.sound_device"
+    return 'io.hica.sound_device'
 
   def get_injected_args(self):
-    return (("--sound-device", HicaValueType.DEVICE | HicaValueType.GLOB, "/dev/snd*"),)
+    return (('--sound-device', HicaValueType.DEVICE | HicaValueType.GLOB, '/dev/snd*'),)
