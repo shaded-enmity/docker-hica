@@ -22,6 +22,9 @@ class HicaInjector(object):
 
   def inject_value_type(self, value, config):
     typ, val = value
+    if not typ:
+      return
+
     if typ & HicaValueType.PATH:
       if val and val != 'none':
         if typ & HicaValueType.GLOB:
