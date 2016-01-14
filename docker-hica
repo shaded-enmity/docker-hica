@@ -12,6 +12,7 @@ from base.hica_base import *
 # create docker client for inspecting images
 dock = docker.Client()
 
+_injectors_path = '/var/lib/docker-hica/injectors'
 _selinux = '/usr/sbin/getenforce'
 _injector_type = 'HicaInjector'
 _injector_registry = {}
@@ -208,7 +209,7 @@ def HicaGetImages(images):
   tags = filter(lambda y: y != [u'<none>:<none>'], [x['RepoTags'] for x in images])
   return set([a for b in tags for a in b])
 
-_injector_registry = HicaLoadInjectors('/var/lib/docker-hica/injectors')
+_injector_registry = HicaLoadInjectors(_injectors_path)
 
 name = HicaGetImageName()
 images = HicaGetImages(dock.images(all=True))
