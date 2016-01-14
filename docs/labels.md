@@ -28,6 +28,7 @@ under `schema` versions.
 ---
 
 JSON Document schema for command aliases is described in a separate document [doc/cmdaliases.md](cmdaliases.md)
+For example usage of command aliases please refer to the [signify example](examples/signify/Dockerfile)
 
 Note that `introspect_runtime` has complementary sub-label `.whitelist`, let's see an example usage:
 
