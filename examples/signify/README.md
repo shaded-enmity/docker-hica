@@ -11,10 +11,29 @@ $ docker build -t signify:1.0 .
 $ mkdir -p ~/.signify_keyes/
 $ cd ../..
 # generate keys in home directory
-$ ./docker-hica signify:1.0 -- -G -p ~/.signify_keys/hica_test.pub -s ~/.signify_keys/hica_test.sec
+$ docker-hica signify:1.0 -- -G -p ~/.signify_keys/hica_test.pub -s ~/.signify_keys/hica_test.sec
 # sign 'docker-hica' executable
-$ ./docker-hica signify:1.0 -- -S -x docker-hica.sig -s ~/.signify_keys/hica_test.sec -m docker-hica
+$ docker-hica signify:1.0 -- -S -x docker-hica.sig -s ~/.signify_keys/hica_test.sec -m docker-hica
 # verify signatures
-$ ./docker-hica signify:1.0 -- -V -x docker-hica.sig -p ~/.signify_keys/hica_test.pub -m docker-hica
+$ docker-hica signify:1.0 -- -V -x docker-hica.sig -p ~/.signify_keys/hica_test.pub -m docker-hica
 Signature Verified
+```
+
+## Command aliases usage
+This image ships with 3 aliases for the above scary commands:
+```bash
+$ docker-hica signify:1.0 create-key mykey
+secret
+secret
+$ docker-hica signify:1.0 sign file.sig mykey.sec file
+secret
+$ docker-hica signify:1.0 verify file.sig mykey.pub file
+Signature Verified
+```
+
+To check the arguments you can also do:
+```bash
+$ docker-hica signify sign help
+sign synopsis:
+ sigfile privkey file
 ```
