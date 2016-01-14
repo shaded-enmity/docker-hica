@@ -255,7 +255,6 @@ runcmd = ['docker', 'run'] + config + [name] + container_args + aliased
 
 if parsed.verbose:
   print('Executing: ' + ' '.join(runcmd))
-print('==>')
 
 p = subprocess.Popen(runcmd, stdin=sys.stdin)
 out, err = p.communicate()
