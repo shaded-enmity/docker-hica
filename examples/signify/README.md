@@ -7,27 +7,27 @@ tool for cozy signing using ECC cryptography.
 
 ```bash
 $ cd examples/signify
-$ docker build -t signify:1.0 .
+$ docker build -t signify .
 $ mkdir -p ~/.signify_keyes/
 $ cd ../..
 # generate keys in home directory
-$ docker-hica signify:1.0 -- -G -p ~/.signify_keys/hica_test.pub -s ~/.signify_keys/hica_test.sec
+$ docker-hica signify -- -G -p ~/.signify_keys/hica_test.pub -s ~/.signify_keys/hica_test.sec
 # sign 'docker-hica' executable
-$ docker-hica signify:1.0 -- -S -x docker-hica.sig -s ~/.signify_keys/hica_test.sec -m docker-hica
+$ docker-hica signify -- -S -x docker-hica.sig -s ~/.signify_keys/hica_test.sec -m docker-hica
 # verify signatures
-$ docker-hica signify:1.0 -- -V -x docker-hica.sig -p ~/.signify_keys/hica_test.pub -m docker-hica
+$ docker-hica signify -- -V -x docker-hica.sig -p ~/.signify_keys/hica_test.pub -m docker-hica
 Signature Verified
 ```
 
 ## Command aliases usage
 This image ships with 3 aliases for the above scary commands:
 ```bash
-$ docker-hica signify:1.0 create-key mykey
+$ docker-hica signify create-key mykey
 secret
 secret
-$ docker-hica signify:1.0 sign file.sig mykey.sec file
+$ docker-hica signify sign file.sig mykey.sec file
 secret
-$ docker-hica signify:1.0 verify file.sig mykey.pub file
+$ docker-hica signify verify file.sig mykey.pub file
 Signature Verified
 ```
 
