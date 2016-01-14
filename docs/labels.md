@@ -23,8 +23,11 @@ under `schema` versions.
 | io.hica.kvm_passthrough | --kvm-device | *path* | `/dev/kvm` |
 | io.hica.introspect_runtime=[] | --introspect-runtime | *path* | `none` |
 | io.hica.tty | *none* | *none* | *none* |
+| io.hica.command_aliases | *none* | `JSON Document` | {} |
 
 ---
+
+JSON Document schema for command aliases is described in a separate document [doc/cmdaliases.md](cmdaliases.md)
 
 Note that `introspect_runtime` has complementary sub-label `.whitelist`, let's see an example usage:
 
