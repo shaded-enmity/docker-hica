@@ -66,10 +66,10 @@ def HicaLoadInjectors(path):
   """
 
   r = {}
-  for inj in os.listdir(os.path.join(os.getcwd(), path)):
+  for inj in os.listdir(path):
     modname, suffix = inj.rsplit('.', 1)
     if suffix == 'py':
-      fullpath = os.path.join(os.getcwd(), path)
+      fullpath = os.path.abspath(path)
       f, filename, description = imp.find_module(modname, [fullpath])
       m = imp.load_module(modname, open(filename, 'U'), filename, description)
       try:
@@ -208,7 +208,7 @@ def HicaGetImages(images):
   tags = filter(lambda y: y != [u'<none>:<none>'], [x['RepoTags'] for x in images])
   return set([a for b in tags for a in b])
 
-_injector_registry = HicaLoadInjectors('injectors')
+_injector_registry = HicaLoadInjectors('/var/lib/docker-hica/injectors')
 
 name = HicaGetImageName()
 images = HicaGetImages(dock.images(all=True))
