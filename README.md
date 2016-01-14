@@ -46,10 +46,11 @@ Let's overview the basic stuff:
 $ docker-hica --help
 usage: docker-hica [-h] [--show-args] [--test-injectors] [--verbose] [--yes]
                    [--selinux-label SELINUX_LABEL] [--user USER]
-                   hica_app_name
+                   hica_app_name ...
 
 positional arguments:
   hica_app_name
+  named_action
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -71,7 +72,7 @@ usage: docker-hica [-h] [--show-args] [--verbose] [--yes]
                    [--machine-id-path MACHINE_ID_PATH]
                    [--xsocket-path XSOCKET_PATH]
                    [--x-display-num X_DISPLAY_NUM]
-                   hica_app_name
+                   hica_app_name ...
 ```
 
 When `--verbose` is specified, the Docker command is also printed out during execution:
