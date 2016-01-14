@@ -1,4 +1,4 @@
-FROM fedora:22
+FROM fedora:23
 MAINTAINER Pavel Odvody <podvody@redhat.com>
 
 LABEL io.hica.bind_pwd=1

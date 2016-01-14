@@ -10,10 +10,10 @@ from base.hica_base import *
 
 class PulseInjector(HicaInjector):
   def get_description(self):
-    return "Bind mounts current user's Pulse audio socket into the container"
+    return 'Bind mounts current user\'s Pulse audio socket into the container'
 
   def get_config_key(self):
-    return "io.hica.pulse"
+    return 'io.hica.pulse'
 
   def get_injected_args(self):
-    return (("--pulse", HicaValueType.PATH, "/run/user/" + str(os.getuid()) + "/pulse"),)
+    return (('--pulse', HicaValueType.PATH, '/run/user/' + str(os.getuid()) + '/pulse'),)

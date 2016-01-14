@@ -6,12 +6,13 @@
 #
 # MIT License (C) 2015
 
-import os, sys, docker, argparse, imp, subprocess
+import json, os, sys, docker, argparse, imp, subprocess, shlex
 from base.hica_base import *
 
 # create docker client for inspecting images
 dock = docker.Client()
 
+_injectors_path = '/var/lib/docker-hica/injectors'
 _selinux = '/usr/sbin/getenforce'
 _injector_type = 'HicaInjector'
 _injector_registry = {}
@@ -66,10 +67,10 @@ def HicaLoadInjectors(path):
   """
 
   r = {}
-  for inj in os.listdir(os.path.join(os.getcwd(), path)):
+  for inj in os.listdir(path):
     modname, suffix = inj.rsplit('.', 1)
     if suffix == 'py':
-      fullpath = os.path.join(os.getcwd(), path)
+      fullpath = os.path.abspath(path)
       f, filename, description = imp.find_module(modname, [fullpath])
       m = imp.load_module(modname, open(filename, 'U'), filename, description)
       try:
@@ -78,20 +79,21 @@ def HicaLoadInjectors(path):
           obj = i()
           r[obj.get_config_key()] = obj
       except AttributeError:
-        print ("Module {0} does not implement `register(context)`".format(modname))
+        print('Module {0} does not implement `register(context)`'.format(modname))
   return r
 
 def HicaGetBaseArgparse():
   """ Provides with common `argparse` settings  """
 
   args = argparse.ArgumentParser()
-  args.add_argument("hica_app_name")
-  args.add_argument("--show-args", help='show possible arguments for the specified "hica_app_name"', default=False, action='store_true')
-  args.add_argument("--test-injectors", help='executes injector tests for specified "hica_app_name"', default=False, action='store_true')
-  args.add_argument("--verbose", help='print additional information', default=False, action='store_true')
-  args.add_argument("--yes", help='bypass the capability review check', default=False, action='store_true')
-  args.add_argument("--selinux-label", help="provide a confinement context", default='label:disable')
-  args.add_argument("--user", help="user:group to run as ({0}:{0})".format(str(os.getuid())), default='{0}:{0}'.format(str(os.getuid())))
+  args.add_argument('hica_app_name')
+  args.add_argument('named_action', default=None, nargs=argparse.REMAINDER)
+  args.add_argument('--show-args', help='show possible arguments for the specified "hica_app_name"', default=False, action='store_true')
+  args.add_argument('--test-injectors', help='executes injector tests for specified "hica_app_name"', default=False, action='store_true')
+  args.add_argument('--verbose', help='print additional information', default=False, action='store_true')
+  args.add_argument('--yes', help='bypass the capability review check', default=False, action='store_true')
+  args.add_argument('--selinux-label', help='provide a confinement context', default='label:disable')
+  args.add_argument('--user', help='user:group to run as ({0}:{0})'.format(str(os.getuid())), default='{0}:{0}'.format(str(os.getuid())))
   return args
 
 def HicaGetImageName():
@@ -175,9 +177,14 @@ def HicaInjectConfiguration(labels, args, config):
   :type config: list(str)
   """
 
+  formatted = []
+  actions = {}
   caps = []
   # map params from argparse back to injectors
   for label in labels.items:
+    # command aliases are not handled via explicit injector
+    if label[0] == 'io.hica.command_aliases':
+      actions = json.loads(label[1])
     if label[0] in _injector_registry:
       inj = _injector_registry[label[0]]
       cfgs = []
@@ -187,15 +194,27 @@ def HicaInjectConfiguration(labels, args, config):
       caps.append(inj.get_description())
       for (arg, typ, defval) in inj.get_injected_args():
         if arg:
-          x = getattr(args, arg[2:].replace("-", "_"))
+          x = getattr(args, arg[2:].replace('-', '_'))
           cfgs.append((typ, x))
         else:
           cfgs.append((typ, defval))
       inj.inject_config(config, cfgs)
 
-  instr = "The container requests the following capabilities: \n - " + "\n - ".join(caps) + "\nProceed? [y/Y/n]: "
+  # process named actions aka command aliases
+  if args.named_action:
+    action, aargs = args.named_action[0], args.named_action[1:]
+    if action in actions:
+      if len(aargs) > 0 and aargs[0] in ['--help', 'help']:
+        print("{0} synopsis:\n {1}".format(action, actions[action]["synopsis"]))
+        sys.exit(0)
+      try:
+        formatted = shlex.split(actions[action]["cmd"].format(*aargs))
+      except IndexError:
+        _HicaBailIf(1, '*** Action "{0}" expects parameters:\n    {1}'.format(action, actions[action]))
+
+  instr = 'The container requests the following capabilities: \n - ' + '\n - '.join(caps) + '\nProceed? [y/Y/n]: '
   if args.yes or not caps or raw_input(instr) in ['y', 'Y']:
-    return config
+    return formatted, config
   else:
     _HicaBailIf(1, '*** Operation aborted!')
 
@@ -208,13 +227,13 @@ def HicaGetImages(images):
   tags = filter(lambda y: y != [u'<none>:<none>'], [x['RepoTags'] for x in images])
   return set([a for b in tags for a in b])
 
-_injector_registry = HicaLoadInjectors("injectors")
+_injector_registry = HicaLoadInjectors(_injectors_path)
 
 name = HicaGetImageName()
 images = HicaGetImages(dock.images(all=True))
 
 # search for the image, also try the default 'latest' tag
-if name not in images and (name + ":latest") not in images:
+if name not in images and (name + ':latest') not in images:
   _HicaBailIf(1, '*** Image \'{0}\' not found locally, bailing!'.format(name))
 
 image = dock.inspect_image(name)
@@ -231,11 +250,11 @@ cfg = ['-i', '-u', parsed.user ]
 if os.path.exists(_selinux) and 'Enforcing' in subprocess.check_output([_selinux]):
    cfg += ['--security-opt', parsed.selinux_label]
 
-config = HicaInjectConfiguration(ls, parsed, cfg)
-runcmd = ["docker", "run"] + config + [name] + container_args
+aliased, config = HicaInjectConfiguration(ls, parsed, cfg)
+runcmd = ['docker', 'run'] + config + [name] + container_args + aliased
 
 if parsed.verbose:
-  print("Executing: " + " ".join(runcmd))
+  print('Executing: ' + ' '.join(runcmd))
 
 p = subprocess.Popen(runcmd, stdin=sys.stdin)
 out, err = p.communicate()

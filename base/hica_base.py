@@ -22,31 +22,34 @@ class HicaInjector(object):
 
   def inject_value_type(self, value, config):
     typ, val = value
+    if not typ:
+      return
+
     if typ & HicaValueType.PATH:
-      if val and val != "none":
+      if val and val != 'none':
         if typ & HicaValueType.GLOB:
           for v in glob.glob(val):
-            config.append("--volume")
-            config.append("{0}:{0}".format(v))
+            config.append('--volume')
+            config.append('{0}:{0}'.format(v))
         else:
-          config.append("--volume")
-          config.append("{0}:{0}".format(val))
+          config.append('--volume')
+          config.append('{0}:{0}'.format(val))
     elif typ & HicaValueType.DEVICE:
-      if val and val != "none":
+      if val and val != 'none':
         if typ & HicaValueType.GLOB:
           for v in glob.glob(val):
-            config.append("--device")
-            config.append("{0}:{0}".format(v))
+            config.append('--device')
+            config.append('{0}:{0}'.format(v))
         else:
-          config.append("--device")
-          config.append("{0}:{0}".format(val))
+          config.append('--device')
+          config.append('{0}:{0}'.format(val))
     elif typ == HicaValueType.STRING:
-      config.append("-e")
+      config.append('-e')
       config.append(val)
     elif typ == HicaValueType.FULLENV:
       for k, v in val.iteritems():
-        config.append("-e")
-        config.append("{0}={1}".format(k, v))
+        config.append('-e')
+        config.append('{0}={1}'.format(k, v))
 
   def inject_config(self, config, from_args):
     for cv in from_args:
@@ -101,5 +104,5 @@ class HicaDriverBase(object):
 def main():
   pass
 
-if __name__ == "main":
+if __name__ == 'main':
   main()

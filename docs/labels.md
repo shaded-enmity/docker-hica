@@ -5,7 +5,7 @@ All labels live in common namespace `io.hica`, each set of labels with defined
 values and name of command line parameter for supplying the value is versioned 
 under `schema` versions. 
 
-## Label Schema v0.4
+## Label Schema v0.5
 
 | Label | Command line | Values | Default Value |
 |-------|--------------|--------|---------------|
@@ -22,8 +22,13 @@ under `schema` versions.
 | io.hica.env_passthrough | --env | `none`, `full` | `full` |
 | io.hica.kvm_passthrough | --kvm-device | *path* | `/dev/kvm` |
 | io.hica.introspect_runtime=[] | --introspect-runtime | *path* | `none` |
+| io.hica.tty | *none* | *none* | *none* |
+| io.hica.command_aliases | *none* | `JSON Document` | {} |
 
 ---
+
+JSON Document schema for command aliases is described in a separate document [doc/cmdaliases.md](cmdaliases.md)
+For example usage of command aliases please refer to the [signify example](../examples/signify/Dockerfile)
 
 Note that `introspect_runtime` has complementary sub-label `.whitelist`, let's see an example usage:
 

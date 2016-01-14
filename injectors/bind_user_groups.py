@@ -9,11 +9,11 @@ from base.hica_base import *
 
 class BindUsersGroupsInjector(HicaInjector):
   def get_description(self):
-    return "Bind mounts users and groups into the container"
+    return 'Bind mounts users and groups into the container'
 
   def get_config_key(self):
-    return "io.hica.bind_users_groups"
+    return 'io.hica.bind_users_groups'
 
   def get_injected_args(self):
-    return (("--users-path", HicaValueType.PATH, "/etc/passwd"),
-        ("--groups-path", HicaValueType.PATH, "/etc/group"))
+    return (('--users-path', HicaValueType.PATH, '/etc/passwd'),
+        ('--groups-path', HicaValueType.PATH, '/etc/group'))

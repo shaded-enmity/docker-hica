@@ -7,12 +7,16 @@
 
 from base.hica_base import *
 
-class SoundDeviceInjector(HicaInjector):
+class TtyInjector(HicaInjector):
   def get_description(self):
-    return 'Bind mounts sound device into the container'
+    return 'Allocates a TTY for the process'
 
   def get_config_key(self):
-    return 'io.hica.sound_device'
+    return 'io.hica.tty'
 
   def get_injected_args(self):
-    return (('--sound-device', HicaValueType.DEVICE | HicaValueType.GLOB, '/dev/snd*'),)
+    return ((None, None, None),)
+
+  def inject_config(self, config, args):
+    super(TtyInjector, self).inject_config(config, args)
+    config.append('-t')

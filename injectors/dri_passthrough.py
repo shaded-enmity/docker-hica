@@ -9,13 +9,12 @@ from base.hica_base import *
 
 class DriPassthroughInjector(HicaInjector):
   def get_description(self):
-    return "Bind mounts direct rendering interface devices (DRI) into the container"
+    return 'Bind mounts direct rendering interface devices (DRI) into the container'
 
   def get_config_key(self):
-    return "io.hica.dri_passthrough"
+    return 'io.hica.dri_passthrough'
 
   def get_injected_args(self):
-    return (("--dri-passthrough-path", HicaValueType.DEVICE | HicaValueType.GLOB, "/dev/dri/*"),
-             ("--dri-passthrough-path-ati", HicaValueType.DEVICE | HicaValueType.GLOB,"/dev/ati/*"),
-             ("--dri-passthrough-path-nvidia", HicaValueType.DEVICE | HicaValueType.GLOB,"/dev/nvidia/*"))
-
+    return (('--dri-passthrough-path', HicaValueType.DEVICE | HicaValueType.GLOB, '/dev/dri/*'),
+             ('--dri-passthrough-path-ati', HicaValueType.DEVICE | HicaValueType.GLOB,'/dev/ati/*'),
+             ('--dri-passthrough-path-nvidia', HicaValueType.DEVICE | HicaValueType.GLOB,'/dev/nvidia*'))
