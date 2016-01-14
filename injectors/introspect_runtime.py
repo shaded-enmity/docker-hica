@@ -43,10 +43,10 @@ class IntrospectRuntimeInjector(HicaInjector):
       (_, stderr) = strace.communicate()
       opened_objects = set()
       for line in stderr.split('\n'):
-          if 'open' in line and 'ENOENT' not in line:
-              start = line.index('"')
-              end = line.index('"', start + 1)
-              opened_objects.add(line[start + 1:end])
+        if 'open' in line and 'ENOENT' not in line:
+          start = line.index('"')
+          end = line.index('"', start + 1)
+          opened_objects.add(line[start + 1:end])
 
       # filter opened objects through white list.
       for obj in opened_objects:
