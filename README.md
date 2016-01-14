@@ -1,5 +1,5 @@
-HICA (Host Integrated Container Applications)
----------------------------------------------
+HICA (Host Integrated Container Applications) v0.5
+--------------------------------------------------
 [hɑɪkː]
 
 The goal of this project is to define a set of image label metadata 
@@ -23,14 +23,20 @@ SELinux usage is documented in [docs/selinux.md](docs/selinux.md)
 
 ### Examples
 
-Examples directory currently contains several Dockerfiles:
+Examples directory currently contains several example Dockerfiles:
  * `jq`
  * `firefox-testing`
  * `signify`
  * `opengl-testing`
  * `test-description`
 
-Please refer to `README.md` in each particular subdirectory.
+Please refer to `README.md` in each particular subdirectory for more information.
+The straightforward way is to simply:
+```bash
+$ cd examples/example
+$ docker build -t example .
+$ docker-hica example
+```
 
 ### Advanced usage
 
