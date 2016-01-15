@@ -1,5 +1,5 @@
-HICA (Host Integrated Container Applications) v0.5
---------------------------------------------------
+HICA (Host Integrated Container Applications) v0.5.1
+----------------------------------------------------
 [hɑɪkː]
 
 The goal of this project is to define a set of image label metadata 
