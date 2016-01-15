@@ -12,7 +12,7 @@ if not os.path.exists(injectors):
     os.mkdir(injectors)
 setup(
     name = 'docker-hica',
-    version = '0.5',
+    version = '0.5.1',
     packages = find_packages(),
     scripts = ['docker-hica'],
     install_requires = ['docker-py'],
@@ -25,5 +25,5 @@ setup(
     license = 'MIT',
     keywords = 'docker host integrated container application',
     url = 'https://github.com/shaded-enmity/docker-hica',
-    data_files=[(injectors, glob.glob('injectors/*'))]
+    data_files=[(injectors, glob.glob('injectors/*.py'))]
 )

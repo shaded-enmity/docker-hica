@@ -1,1 +1,1 @@
-include CONTRIBUTORS LICENSE README.md VERSION docs/*
+include CONTRIBUTORS LICENSE README.md VERSION docs/* injectors/*.py
