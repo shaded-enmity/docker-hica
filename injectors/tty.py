@@ -15,7 +15,7 @@ class TtyInjector(HicaInjector):
     return 'io.hica.tty'
 
   def get_injected_args(self):
-    return ((None, None, None),)
+    return ((None, HicaValueType.NONE, None),)
 
   def inject_config(self, config, args):
     super(TtyInjector, self).inject_config(config, args)
