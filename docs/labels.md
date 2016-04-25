@@ -23,6 +23,7 @@ under `schema` versions.
 | io.hica.kvm_passthrough | --kvm-device | *path* | `/dev/kvm` |
 | io.hica.introspect_runtime=[] | --introspect-runtime | *path* | `none` |
 | io.hica.tty | *none* | *none* | *none* |
+| io.hica.libraries | --libraries, --library-path | `["a", "b" ...]` list, `path` | `none` |
 | io.hica.command_aliases | *none* | `JSON Document` | {} |
 
 ---

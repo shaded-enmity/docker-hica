@@ -1,4 +1,4 @@
-HICA (Host Integrated Container Applications) v0.5.1
+HICA (Host Integrated Container Applications) v0.6.0
 ----------------------------------------------------
 [hɑɪkː]
 

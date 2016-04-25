@@ -12,9 +12,9 @@ if not os.path.exists(injectors):
     os.mkdir(injectors)
 setup(
     name = 'docker-hica',
-    version = '0.5.1',
+    version = '0.6.0',
     packages = find_packages(),
-    scripts = ['docker-hica'],
+    scripts = ['hica'],
     install_requires = ['docker-py'],
     package_data = {
     	'': ['LICENSE', 'README.md', 'VERSION', 'CONTRIBUTORS']
